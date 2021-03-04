@@ -1,8 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 import json
 import os.path
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
+
+app.secret_key = 'joljlklkjoijo'
 
 @app.route('/')
 def home():
@@ -19,11 +22,19 @@ def your_url():
       with open('urls.json') as urls_file:
         urls = json.load(urls_file)
 
+      # If the url does not exist, we create it in our file
       if request.form['code'] in urls.keys():
+        flash('This key is already taken. Please chose another one.')
         return redirect(url_for('home'))
 
-    # If the url does not exist, we create it in our file
-    urls[request.form['code']] = {'url': request.form['url']}
+      if 'url' in request.form.keys():
+        urls[request.form['code']] = {'url': request.form['url']}
+      else:
+        f = request.files['file']
+        full_name = request.form['code'] + secure_filename(f.filename)
+        f.save('/home/adriano/Projects/python/url-shortener/' + full_name)
+        urls[request.form['code']] = {'file': full_name}
+
     with open('urls.json', 'w') as url_file:
       json.dump(urls, url_file)
     return render_template('your-url.html', code=request.form['code'])
