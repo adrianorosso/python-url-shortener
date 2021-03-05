@@ -2,10 +2,14 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 import json
 import os.path
 from werkzeug.utils import secure_filename
+from dotenv import load_dotenv
 
 app = Flask(__name__)
+load_dotenv()
 
 app.secret_key = 'joljlklkjoijo'
+
+FILE_PATH = os.getenv('FILE_PATH')
 
 @app.route('/')
 def home():
@@ -32,7 +36,7 @@ def your_url():
       else:
         f = request.files['file']
         full_name = request.form['code'] + secure_filename(f.filename)
-        f.save('/home/adriano/Projects/python/url-shortener/' + full_name)
+        f.save(FILE_PATH + full_name)
         urls[request.form['code']] = {'file': full_name}
 
     with open('urls.json', 'w') as url_file:
@@ -40,3 +44,12 @@ def your_url():
     return render_template('your-url.html', code=request.form['code'])
   else:
     return redirect(url_for('home'))
+
+@app.route('/<string:code>')
+def redirect_to_url(code):
+  if os.path.exists('urls.json'):
+    with open('urls.json', 'r') as url_file:
+      urls = json.load(url_file)
+      if code in urls.keys():
+        if 'url' in urls[code].keys():
+          return redirect(urls[code]['url'])
