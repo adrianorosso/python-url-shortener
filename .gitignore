@@ -1,1 +1,4 @@
 urls.json
+.env
+*static*
+*pycache*
