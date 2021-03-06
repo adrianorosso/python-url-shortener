@@ -23,3 +23,12 @@
   </br>
   <input type="submit" name="shorten" value="Shorten">
 </form>
+
+{% if codes %} 
+  <h2>Codes that you created:</h2>
+  <ul>
+    {% for code in codes %}
+      <li><a href="{{ url_for('redirect_to_url', code=code) }}">{{ code }}</a></li>
+    {% endfor %}
+  </ul>
+{% endif %}
