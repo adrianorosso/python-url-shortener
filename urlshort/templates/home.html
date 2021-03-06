@@ -30,7 +30,7 @@
   <h2>Codes that you created:</h2>
   <ul>
     {% for code in codes %}
-      <li><a href="{{ url_for('redirect_to_url', code=code) }}">{{ code }}</a></li>
+      <li><a href="{{ url_for('urlshort.redirect_to_url', code=code) }}">{{ code }}</a></li>
     {% endfor %}
   </ul>
 {% endif %}
